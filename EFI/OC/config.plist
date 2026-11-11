@@ -40,7 +40,7 @@
 			</dict>
 			<dict>
 				<key>Comment</key>
-				<string>N-11: type-0 MADT from scripts/acpi/x2apic_to_lapic.py</string>
+				<string>APIC-legacy.aml</string>
 				<key>Enabled</key>
 				<true/>
 				<key>Path</key>
@@ -48,11 +48,19 @@
 			</dict>
 			<dict>
 				<key>Comment</key>
-				<string>N-92 shut down powers off: clear XHCI PME at S5 (wraps ZPTS)</string>
+				<string>SSDT-FIXSHUTDOWN.aml</string>
 				<key>Enabled</key>
 				<true/>
 				<key>Path</key>
 				<string>SSDT-FIXSHUTDOWN.aml</string>
+			</dict>
+			<dict>
+				<key>Comment</key>
+				<string>SSDT-DGPU-ON (power the dGPU on in Hybrid mode)</string>
+				<key>Enabled</key>
+				<false/>
+				<key>Path</key>
+				<string>SSDT-DGPU-ON.aml</string>
 			</dict>
 		</array>
 		<key>Delete</key>
@@ -61,7 +69,7 @@
 				<key>All</key>
 				<false/>
 				<key>Comment</key>
-				<string>N-11: drop firmware x2APIC-only MADT (XNU counts only type-0 CPUs, I-025)</string>
+				<string>firmware x2APIC-only MADT</string>
 				<key>Enabled</key>
 				<true/>
 				<key>OemTableId</key>
@@ -476,7 +484,7 @@
 				<key>BaseSkip</key>
 				<integer>0</integer>
 				<key>Comment</key>
-				<string>N-92 Method (_PTS, 1) -&gt; ZPTS (SSDT-FIXSHUTDOWN wraps it)</string>
+				<string>Method (_PTS, 1) -&gt; ZPTS (SSDT-FIXSHUTDOWN wraps it)</string>
 				<key>Count</key>
 				<integer>1</integer>
 				<key>Enabled</key>
@@ -615,7 +623,7 @@
 				<key>BundlePath</key>
 				<string>CpuTscSync.kext</string>
 				<key>Comment</key>
-				<string>N-12: sync TSC across cores (N-11 Non-monotonic time panic)</string>
+				<string>CpuTscSync.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -777,7 +785,7 @@
 				<key>BundlePath</key>
 				<string>LegionITEKbdFix.kext</string>
 				<key>Comment</key>
-				<string>N-18: keep HID driver off ITE C195 interface 1</string>
+				<string>LegionITEKbdFix.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -849,7 +857,7 @@
 				<key>BundlePath</key>
 				<string>VoodooI2C.kext/Contents/PlugIns/VoodooGPIO.kext</string>
 				<key>Comment</key>
-				<string>N-25: VoodooI2C plugin (dependency)</string>
+				<string>VoodooGPIO.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -867,7 +875,7 @@
 				<key>BundlePath</key>
 				<string>VoodooI2C.kext/Contents/PlugIns/VoodooI2CServices.kext</string>
 				<key>Comment</key>
-				<string>N-25: VoodooI2C plugin (dependency)</string>
+				<string>VoodooI2CServices.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -885,7 +893,7 @@
 				<key>BundlePath</key>
 				<string>VoodooI2C.kext</string>
 				<key>Comment</key>
-				<string>N-25: touchpad ELAN06FA on PC02.I2C1 (8086:7F4D); its VoodooInput plugin is not loaded</string>
+				<string>VoodooI2C.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -903,7 +911,7 @@
 				<key>BundlePath</key>
 				<string>VoodooI2CHID.kext</string>
 				<key>Comment</key>
-				<string>N-25: HID over I2C (PNP0C50)</string>
+				<string>VoodooI2CHID.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -921,7 +929,7 @@
 				<key>BundlePath</key>
 				<string>LegionI2CArrowLake.kext</string>
 				<key>Comment</key>
-				<string>N-25: VoodooI2C Ice Lake timing for 8086:7F4C-7F4F (audit: legion-i2c-arrowlake.md)</string>
+				<string>LegionI2CArrowLake.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -937,13 +945,13 @@
 				<key>Arch</key>
 				<string>x86_64</string>
 				<key>BundlePath</key>
-				<string>MtkWlan.kext</string>
+				<string>WTLWireless.kext</string>
 				<key>Comment</key>
-				<string>N-36: MT7925 Wi-Fi 0.7.0, block ack both ways + CLC/rate power tables + TX status diagnostics; state in ioreg Mtk*</string>
+				<string>WTLWireless.kext (in place of MtkWlan.kext)</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
-				<string>Contents/MacOS/MtkWlan</string>
+				<string>Contents/MacOS/WTLWireless</string>
 				<key>MaxKernel</key>
 				<string></string>
 				<key>MinKernel</key>
@@ -957,7 +965,7 @@
 				<key>BundlePath</key>
 				<string>AMFIPass.kext</string>
 				<key>Comment</key>
-				<string>AMFIPass 1.4.1 (NullMoth trial, H144)</string>
+				<string>AMFIPass.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -975,7 +983,7 @@
 				<key>BundlePath</key>
 				<string>AppleALC.kext</string>
 				<key>Comment</key>
-				<string>N-56: AppleALC 1.9.8, ALC257 over the HDA link with 7F50 in DSP mode (alcid=18)</string>
+				<string>AppleALC.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -993,7 +1001,7 @@
 				<key>BundlePath</key>
 				<string>LegionCpuProbe.kext</string>
 				<key>Comment</key>
-				<string>N-58: LegionCpuProbe, read-only CPU power probe (H148)</string>
+				<string>LegionCpuProbe.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -1007,11 +1015,29 @@
 			</dict>
 			<dict>
 				<key>Arch</key>
+				<string>Any</string>
+				<key>BundlePath</key>
+				<string>LegionCpuPower.kext</string>
+				<key>Comment</key>
+				<string>H148 / #4: HWP requests per core and MCHBAR power limit (runtime switches, off at boot)</string>
+				<key>Enabled</key>
+				<true/>
+				<key>ExecutablePath</key>
+				<string>Contents/MacOS/LegionCpuPower</string>
+				<key>MaxKernel</key>
+				<string>25.99.99</string>
+				<key>MinKernel</key>
+				<string>25.0.0</string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
+			<dict>
+				<key>Arch</key>
 				<string>x86_64</string>
 				<key>BundlePath</key>
 				<string>BlueToolFixup.kext</string>
 				<key>Comment</key>
-				<string>N-59: BlueToolFixup 2.7.2 (bluetoothd third-party controller)</string>
+				<string>BlueToolFixup.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -1029,7 +1055,7 @@
 				<key>BundlePath</key>
 				<string>LegionBtFix.kext</string>
 				<key>Comment</key>
-				<string>I-047 bluetoothd 25G241 public own address</string>
+				<string>LegionBtFix.kext</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -1045,13 +1071,67 @@
 				<key>Arch</key>
 				<string>x86_64</string>
 				<key>BundlePath</key>
-				<string>MtkBt.kext</string>
+				<string>WTLWireless.kext/Contents/PlugIns/WTLWirelessBt.kext</string>
 				<key>Comment</key>
-				<string>N-59: MtkBt, MT7925 BT firmware loader (0489:E111)</string>
+				<string>WTLWirelessBt.kext (in place of MtkBt.kext)</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
-				<string>Contents/MacOS/MtkBt</string>
+				<string>Contents/MacOS/WTLWirelessBt</string>
+				<key>MaxKernel</key>
+				<string></string>
+				<key>MinKernel</key>
+				<string></string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
+			<dict>
+				<key>Arch</key>
+				<string>x86_64</string>
+				<key>BundlePath</key>
+				<string>WTLWireless.kext/Contents/PlugIns/WTLWirelessNative.kext</string>
+				<key>Comment</key>
+				<string>WTLWirelessNative.kext (in place of MtkWlanNative.kext)</string>
+				<key>Enabled</key>
+				<true/>
+				<key>ExecutablePath</key>
+				<string>Contents/MacOS/WTLWirelessNative</string>
+				<key>MaxKernel</key>
+				<string>25.99.99</string>
+				<key>MinKernel</key>
+				<string>25.0.0</string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
+			<dict>
+				<key>Arch</key>
+				<string>x86_64</string>
+				<key>BundlePath</key>
+				<string>IGPUConsoleRange.kext</string>
+				<key>Comment</key>
+				<string>IGPUConsoleRange.kext (Intel console range for IONDRV)</string>
+				<key>Enabled</key>
+				<true/>
+				<key>ExecutablePath</key>
+				<string>Contents/MacOS/IGPUConsoleRange</string>
+				<key>MaxKernel</key>
+				<string></string>
+				<key>MinKernel</key>
+				<string></string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
+			<dict>
+				<key>Arch</key>
+				<string>x86_64</string>
+				<key>BundlePath</key>
+				<string>XeGfxBlock.kext</string>
+				<key>Comment</key>
+				<string>XeGfxBlock.kext</string>
+				<key>Enabled</key>
+				<false/>
+				<key>ExecutablePath</key>
+				<string></string>
 				<key>MaxKernel</key>
 				<string></string>
 				<key>MinKernel</key>
@@ -1157,7 +1237,7 @@
 			<key>HibernateSkipsPicker</key>
 			<false/>
 			<key>HideAuxiliary</key>
-			<false/>
+			<true/>
 			<key>InstanceIdentifier</key>
 			<string></string>
 			<key>LauncherOption</key>
@@ -1165,21 +1245,21 @@
 			<key>LauncherPath</key>
 			<string>Default</string>
 			<key>PickerAttributes</key>
-			<integer>17</integer>
+			<integer>145</integer>
 			<key>PickerAudioAssist</key>
 			<false/>
 			<key>PickerMode</key>
-			<string>Builtin</string>
+			<string>External</string>
 			<key>PickerVariant</key>
-			<string>Auto</string>
+			<string>Acidanthera\GoldenGate</string>
 			<key>PollAppleHotKeys</key>
 			<true/>
 			<key>ShowPicker</key>
-			<false/>
+			<true/>
 			<key>TakeoffDelay</key>
 			<integer>0</integer>
 			<key>Timeout</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 		<key>Debug</key>
 		<dict>
@@ -1227,7 +1307,7 @@
 			<data>
 			</data>
 			<key>ScanPolicy</key>
-			<integer>0</integer>
+			<integer>769</integer>
 			<key>SecureBootModel</key>
 			<string>Disabled</string>
 			<key>Vault</key>
@@ -1242,6 +1322,50 @@
 		</dict>
 		<key>Tools</key>
 		<array>
+			<dict>
+				<key>Arguments</key>
+				<string></string>
+				<key>Auxiliary</key>
+				<false/>
+				<key>Comment</key>
+				<string>boots Windows Boot Manager straight from the firmware (BootNext + restart), never through OpenCore</string>
+				<key>Enabled</key>
+				<true/>
+				<key>Flavour</key>
+				<string>Windows</string>
+				<key>FullNvramAccess</key>
+				<true/>
+				<key>Name</key>
+				<string>Windows</string>
+				<key>Path</key>
+				<string>LegionBootNext.efi</string>
+				<key>RealPath</key>
+				<false/>
+				<key>TextMode</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>Arguments</key>
+				<string></string>
+				<key>Auxiliary</key>
+				<false/>
+				<key>Comment</key>
+				<string>boots the Legion probe stick (PROBEESP) from the firmware via BootNext</string>
+				<key>Enabled</key>
+				<true/>
+				<key>Flavour</key>
+				<string>Ubuntu:Linux</string>
+				<key>FullNvramAccess</key>
+				<true/>
+				<key>Name</key>
+				<string>Ubuntu probe</string>
+				<key>Path</key>
+				<string>LegionProbeBoot.efi</string>
+				<key>RealPath</key>
+				<false/>
+				<key>TextMode</key>
+				<false/>
+			</dict>
 			<dict>
 				<key>Arguments</key>
 				<string></string>
@@ -1304,7 +1428,7 @@
 				AAAAAAAAAAAAAAAAAAA=
 				</data>
 				<key>boot-args</key>
-				<string>-v keepsyms=1 debug=0x100 -vi2c-force-polling revpatch=sbvmm,cpuname revcpu=1 nvfb=1 nvaccel=1 nvfbheads=4 -nvkmsnosmooth amfi_get_out_of_my_way=0x1 amfi=0x80 ipc_control_port_options=0 -nvaccelnoheadless alcid=18 nvrmacpibl=1 nvrmphysctl=1 nvrmnvpcf=1 nvrmtgp=1 nvfbhidpi=1 nvrmdiag=1</string>
+				<string>-v keepsyms=1 debug=0x100 -vi2c-force-polling revpatch=sbvmm,cpuname revcpu=1 nvfb=1 nvaccel=1 nvfbheads=4 -nvkmsnosmooth amfi_get_out_of_my_way=0x1 amfi=0x80 ipc_control_port_options=0 -nvaccelnoheadless alcid=18 nvrmacpibl=1 nvrmphysctl=1 nvrmnvpcf=1 nvrmtgp=1 nvfbhidpi=1 nvrmdiag=1 gfxrst=4 -nmintelfboff mtkfe=native mtknativeif=1</string>
 				<key>csr-active-config</key>
 				<data>
 				QwoAAA==
@@ -1322,6 +1446,7 @@
 			<key>4D1EDE05-38C7-4A6A-9CC6-4BCCA8B38C14</key>
 			<array>
 				<string>DefaultBackgroundColor</string>
+				<string>UIScale</string>
 			</array>
 			<key>4D1FDA02-38C7-4A6A-9CC6-4BCCA8B30102</key>
 			<array>
@@ -1549,7 +1674,7 @@
 				<key>Arguments</key>
 				<string></string>
 				<key>Comment</key>
-				<string>I-046: unload cbmr_driver.efi and reserve its pages</string>
+				<string></string>
 				<key>Enabled</key>
 				<true/>
 				<key>HideVerbose</key>
@@ -1558,6 +1683,20 @@
 				<false/>
 				<key>Path</key>
 				<string>LegionCbmrFix.efi</string>
+			</dict>
+			<dict>
+				<key>Arguments</key>
+				<string></string>
+				<key>Comment</key>
+				<string>graphical picker</string>
+				<key>Enabled</key>
+				<true/>
+				<key>HideVerbose</key>
+				<false/>
+				<key>LoadEarly</key>
+				<false/>
+				<key>Path</key>
+				<string>OpenCanopy.efi</string>
 			</dict>
 		</array>
 		<key>Input</key>
@@ -1614,7 +1753,7 @@
 			<key>TextRenderer</key>
 			<string>BuiltinGraphics</string>
 			<key>UIScale</key>
-			<integer>0</integer>
+			<integer>2</integer>
 			<key>UgaPassThrough</key>
 			<false/>
 		</dict>

@@ -2,7 +2,7 @@
 
 Renamed from `Legion-5-15IAX10-OpenCore` on 2026-10-31; the EFI layout is unchanged. Old links redirect here.
 
-The OpenCore EFI, ACPI tables and config for running macOS on a Lenovo Legion 5 15IAX10 (machine type 83F0, BIOS S2CN26WW): Intel Core Ultra 9 275HX (Arrow Lake-HX), NVIDIA RTX 5070 Laptop (`10DE:2D18`), Intel iGPU (`8086:7D67`), MediaTek MT7925 Wi-Fi and Bluetooth, Realtek RTL8111 Ethernet, WD SN7100S NVMe, 2560x1600 165 Hz panel. It runs macOS Tahoe 26.7.2 (25G332, since 2026-10-28; 26.7.1 25G241 before) as my daily system, with macOS Sequoia 15.8.1 also booting from the same EFI. This is the config as it runs here, with the machine identity replaced by placeholders.
+The OpenCore EFI, ACPI tables and config for running macOS on a Lenovo Legion 5 15IAX10 (machine type 83F0, BIOS S2CN26WW): Intel Core Ultra 9 275HX (Arrow Lake-HX), NVIDIA RTX 5070 Laptop (`10DE:2D18`), Intel iGPU (`8086:7D67`), MediaTek MT7925 Wi-Fi and Bluetooth, Realtek RTL8111 Ethernet, WD SN7100S NVMe, 2560x1600 165 Hz panel. It runs macOS Tahoe 26.7.3 (developer beta 25G416 since 2026-11-10; 26.7.2 25G332 before, which is where the NVIDIA driver was last checked) as my daily system, with macOS Sequoia 15.8.1 also booting from the same EFI. This is the config as it runs here, with the machine identity replaced by placeholders.
 
 Most of the hardware needed its own driver, which is why this org exists. The config ties them together.
 
@@ -38,6 +38,7 @@ Windows stays on its own ESP and is started with F12 and Windows Boot Manager, n
 | `SSDT-EC-USBX-LAPTOP.aml` | fake EC for macOS and USBX power properties; the real EC stays untouched |
 | `SSDT-RTCAWAC.aml` | `STAS = 1` under Darwin: the DSDT's legacy RTC instead of AWAC |
 | `APIC-legacy.aml` | the firmware's MADT rewritten with type-0 Local APIC entries (`scripts/x2apic_to_lapic.py`); XNU counts CPUs only from those, and this firmware emits x2APIC entries only, so the kernel saw 0 CPUs and died before the console. The firmware table is deleted |
+| `SSDT-DGPU-ON.aml` | listed but disabled, and not included here: a test table from the hybrid graphics work |
 | `SSDT-FIXSHUTDOWN.aml` | clears the xHCI controllers' PME enable at S5, so Shut Down powers off instead of restarting; needs the `_PTS` to `ZPTS` rename below |
 
 The `.dsl` sources are in `ACPI/`. The 11 `ACPI > Patch` entries come from `scripts/dsdt_patches.py`, each with its reason: two module-level `If (PCHA != Zero)` blocks turned into scopes (macOS's ACPICA rejected the whole DSDT otherwise), a scope retarget, three `Name` + `Store` pairs turned into methods (sideband and USB port visibility), four `_UPC` fixes in Lenovo's USB table so the keyboard (HS05), Bluetooth (HS14), webcam (HS11) and a USB-A port (HS02) are connectable under macOS, and the `_PTS` rename.
@@ -62,20 +63,22 @@ Binaries are not in this repository. Get each from its release page; the version
 | VoodooI2C (+ VoodooGPIO, VoodooI2CServices), VoodooI2CHID | 2.9.1 | VoodooI2C |
 | LegionI2CArrowLake | 1.1.0 | this org |
 | WTLWireless | 0.14.0 | this org; replaced MtkWlan, MtkWlanNative and MtkBt on 2026-11-10 |
-| WTLWireless.kext/Contents/PlugIns/WTLWirelessNative | 0.14.0 | this org, the Wi-Fi menu part, Tahoe only (Darwin 25); 0.14.0 was booted on the 26.7.3 developer beta (25G416) |
-| LegionCpuPower | 0.4.1 | this org, Tahoe only (Darwin 25) |
 | AMFIPass | 1.4.1 | dortania (lets WindowServer load the ad hoc signed Metal plugin) |
 | AppleALC | 1.9.8 | acidanthera (audio on Sequoia, `alcid=18`) |
 | LegionCpuProbe | 1.1.0 | this org, read-only MSR probe for the turbo question; optional |
+| LegionCpuPower | 0.4.1 | this org, Tahoe only (`MinKernel 25.0.0`, `MaxKernel 25.99.99`) |
 | BlueToolFixup | 2.7.2 | acidanthera (BrcmPatchRAM release) |
 | LegionBtFix | 0.3.0 | this org, any Tahoe build with the same bluetoothd code, `MinKernel 25.0.0`, `MaxKernel 25.99.99` |
 | WTLWireless.kext/Contents/PlugIns/WTLWirelessBt | 0.14.0 | this org, the Bluetooth firmware loader, its own `Kernel > Add` entry |
+| WTLWireless.kext/Contents/PlugIns/WTLWirelessNative | 0.14.0 | this org, the Wi-Fi menu part, Tahoe only (`MinKernel 25.0.0`, `MaxKernel 25.99.99`); 0.14.0 was booted on the 26.7.3 developer beta (25G416) |
+| IGPUConsoleRange | 0.4 | this org ([WTLHybridGfx](https://github.com/watchthelight-labs/WTLHybridGfx)): gives macOS a console memory range on the Intel GPU when the firmware hands the panel to it |
+| XeGfxBlock | 1.1 | listed but disabled; a switch from the Intel graphics tests ([WTLIntelGfx](https://github.com/watchthelight-labs/WTLIntelGfx)), leave it out |
 
-Graphics is NvGfx's installer package, not injected by OpenCore. The published `config.plist` still lists the kexts of 2026-10-17: MtkWlan and MtkBt as separate kexts, no Wi-Fi menu plugin, no LegionCpuPower and no `mtkfe=native mtknativeif=1`. It is due a refresh from the live config. Until then the three WTLWireless entries are in that repo's [`tools/bundle/config-snippet.plist`](https://github.com/watchthelight-labs/WTLWireless/blob/main/tools/bundle/config-snippet.plist).
+Graphics is NvGfx's installer package, not injected by OpenCore. The published `config.plist` is the live one of 2026-11-11 (30 entries). Its two `Misc > Tools` entries `LegionBootNext.efi` and `LegionProbeBoot.efi` are local helpers that are not published (the first restarts into Windows Boot Manager through the firmware's BootNext, the second into a Linux test stick): remove both entries, or OpenCore will list tools it cannot start.
 
 ### Drivers and tools
 
-`OpenRuntime.efi`, `OpenHfsPlus.efi`, `ResetNvramEntry.efi`, `ToggleSipEntry.efi` from OpenCore 1.0.8; `LegionCbmrFix.efi` 1.0.0 from this org. `OpenShell.efi` as the only tool.
+`OpenRuntime.efi`, `OpenHfsPlus.efi`, `ResetNvramEntry.efi`, `ToggleSipEntry.efi` and `OpenCanopy.efi` (the graphical picker, with `EFI/OC/Resources` from OcBinaryData) from OpenCore 1.0.8; `LegionCbmrFix.efi` 1.0.0 from this org. Tools: `OpenShell.efi`, and the two local helpers named above.
 
 ### Settings worth knowing
 
@@ -83,11 +86,12 @@ Graphics is NvGfx's installer package, not injected by OpenCore. The published `
 - `Kernel > Quirks`: `ProvideCurrentCpuInfo` (hybrid CPUs need it; without it the boot hangs at `EXITBS:START`), `DisableIoMapper` and `DisableIoMapperMapping` (with AppleVTD on, the NVIDIA driver reads IOMMU addresses from the BARs and refuses the card), `AppleXcpmCfgLock`, `DisableLinkeditJettison`, `PanicNoKextDump`, `PowerTimeoutKernelPanic`, `SetApfsTrimTimeout 0` (skips the TRIM of all free space that APFS runs at every mount; after a resize it took about 20 s of each boot).
 - `Booter > Quirks`: `ForceExitBootServices` (a real hang at ExitBootServices without it), `ResizeAppleGpuBars 0` (the RTX 5070 boots with an 8 GB BAR1; NvGfx resizes it back up itself), `SetupVirtualMap` off, `DevirtualiseMmio` off, the usual rest on.
 - `UEFI > Quirks`: `ReleaseUsbOwnership`, `RequestBootVarRouting`, `ResizeGpuBars -1`.
-- `Misc > Boot`: no picker (`ShowPicker false`, hold Option or Esc while OpenCore starts to get it), `LauncherOption Full` so OpenCore stays first in the firmware boot order, `Timeout 0`.
-- `Misc > Security`: `SecureBootModel Disabled`, `Vault Optional`, `ScanPolicy 0`.
+- `Misc > Boot`: the graphical picker (`ShowPicker true`, `PickerMode External` with OpenCanopy and the GoldenGate icons, `Timeout 2`, `UEFI > Output > UIScale 2` for the 2560x1600 panel), `LauncherOption Full` so OpenCore stays first in the firmware boot order. Until 2026-10-23 there was no picker (`ShowPicker false`, `Timeout 0`).
+- `Misc > Security`: `SecureBootModel Disabled`, `Vault Optional`, `ScanPolicy 0x301` (only APFS and HFS+ volumes are scanned, so the Windows ESP is never a picker entry).
 - `NVRAM`: `csr-active-config 0x0A43` (unsigned and unapproved kexts, for NvGfx and VoodooHDA), `WriteFlash false`, the two BlueToolFixup keys, `revcpuname` for the CPU name.
 - `PlatformInfo`: `MacBookPro16,1`, `ProcessorType 0x0F01` (the Comet Lake spoof makes OpenCore pick a type macOS cannot name with 24 cores).
 - `boot-args`: `-v keepsyms=1 debug=0x100` (a panic stays on screen), `-vi2c-force-polling`, `revpatch=sbvmm,cpuname revcpu=1`, the NvGfx set (`nvfb=1 nvaccel=1 nvfbheads=4 -nvkmsnosmooth -nvaccelnoheadless nvrmacpibl=1 nvrmphysctl=1 nvrmnvpcf=1 nvrmtgp=1 nvfbhidpi=1 nvrmdiag=1`), the AMFI relaxations NvGfx's plugin needs (`amfi_get_out_of_my_way=0x1 amfi=0x80 ipc_control_port_options=0`), and `alcid=18` for AppleALC.
+- `boot-args` added since the first publication: `gfxrst=4` (stops WhateverGreen from copying the boot console into a new framebuffer when the panel is on the Intel GPU), `-nmintelfboff` (keeps the NVIDIA package's Intel framebuffer kext from starting at boot) and `mtkfe=native mtknativeif=1` (WTLWireless: the macOS Wi-Fi menu front end).
 
 ## BIOS
 

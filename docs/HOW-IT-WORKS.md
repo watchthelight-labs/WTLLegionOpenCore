@@ -7,13 +7,13 @@ This is the reasoning behind `EFI/OC/config.plist`, written so I can answer "why
 The laptop has two EFI partitions on the internal NVMe. The first one (200 MiB) belongs to Windows and holds Windows Boot Manager plus a custom shim; OpenCore never touches it. The second is a separate FAT32 partition made for OpenCore, and this repository is its `EFI` folder.
 
 1. The Lenovo firmware starts whatever is first in its boot order. `Misc > Boot > LauncherOption Full` makes OpenCore add its own firmware boot entry and keep it first, so that is OpenCore (`EFI/BOOT/BOOTx64.efi` then `EFI/OC/OpenCore.efi`).
-2. OpenCore loads its drivers from `UEFI > Drivers`: `OpenRuntime.efi` (needed by the Booter quirks and the NVRAM handling), `OpenHfsPlus.efi` (to read the HFS+ installer and recovery volumes), `ResetNvramEntry.efi` and `ToggleSipEntry.efi` (two picker entries), and `LegionCbmrFix.efi`. The last one is from this org: the Lenovo BIOS loads Microsoft's cloud recovery driver (`cbmr_driver.efi`) at 0x180000000 on every boot and macOS later panics on its pages, so the driver unloads that image and reserves its range before macOS starts.
-3. With `ShowPicker false` and `Timeout 0` OpenCore boots the default entry (the one Startup Disk sets) straight away. Holding Option or Esc while it starts brings up the text picker (`PollAppleHotKeys true`, `PickerMode Builtin`).
+2. OpenCore loads its drivers from `UEFI > Drivers`: `OpenRuntime.efi` (needed by the Booter quirks and the NVRAM handling), `OpenHfsPlus.efi` (to read the HFS+ installer and recovery volumes), `ResetNvramEntry.efi` and `ToggleSipEntry.efi` (two picker entries), `OpenCanopy.efi` (the graphical picker), and `LegionCbmrFix.efi`. The last one is from this org: the Lenovo BIOS loads Microsoft's cloud recovery driver (`cbmr_driver.efi`) at 0x180000000 on every boot and macOS later panics on its pages, so the driver unloads that image and reserves its range before macOS starts.
+3. OpenCore shows its graphical picker (`ShowPicker true`, `PickerMode External`, OpenCanopy) for two seconds (`Timeout 2`) and then boots the default entry, the one Startup Disk sets. Until 2026-10-23 the config had no picker (`ShowPicker false`, `Timeout 0`, Option or Esc to get the text one).
 4. boot.efi loads the kernel collection, OpenCore applies the kernel patches and kext injections described below, and ExitBootServices hands the machine to XNU.
 
 Windows is started from the firmware menu (F12, Windows Boot Manager), never through OpenCore, because OpenCore would hand it the Mac SMBIOS.
 
-A USB stick with a known-good copy of the same EFI is the rescue path: F12, pick the stick. The stick's copy differs in two places, `LauncherOption Disabled` (so booting from it does not register the stick in the firmware boot order) and `ShowPicker true` (so it always offers a choice).
+A USB stick with a known-good copy of the same EFI is the rescue path: F12, pick the stick. The stick's copy differs in one place, `LauncherOption Disabled`, so booting from it does not register the stick in the firmware boot order. It shows the picker like the internal copy.
 
 ## ACPI
 
@@ -96,17 +96,21 @@ OpenCore injects the kexts in the order of `Kernel > Add`, and a kext has to com
 | 16 | VoodooI2C | I2C bus driver for the touchpad (`ELAN06FA` on `PC02.I2C1`, `8086:7F4D`). Its bundled VoodooInput is not loaded, because two copies would collide |
 | 17 | VoodooI2CHID | HID over I2C |
 | 18 | LegionI2CArrowLake | plist only: a VoodooI2C personality for the Arrow Lake-HX I2C IDs with the Ice Lake timing values, so it comes after VoodooI2C |
-| 19 | MtkWlan | MT7925 Wi-Fi |
+| 19 | WTLWireless | MT7925 Wi-Fi: the core of the one MediaTek kext (PCI driver, firmware, Ethernet-style fallback port). Its two plugins have their own entries further down |
 | 20 | AMFIPass | lets WindowServer load NvGfx's ad hoc signed Metal plugin |
 | 21 | AppleALC | ALC257 audio on Sequoia (`alcid=18`); it loads on Tahoe too, but Tahoe has no AppleHDA and uses VoodooHDA from `/Library/Extensions` |
 | 22 | LegionCpuProbe | read-only CPU power probe; optional |
-| 23 | BlueToolFixup | lets `bluetoothd` accept a non-Apple controller |
-| 24 | LegionBtFix | patches `bluetoothd` on Tahoe; `MinKernel 25.0.0`, `MaxKernel 25.99.99`, so Sequoia never loads it |
-| 25 | MtkBt | loads the MT7925 Bluetooth firmware so `bluetoothd` finds a working controller |
+| 23 | LegionCpuPower | lifts the firmware's hidden CPU power limit and sets a HWP range per core; `MinKernel 25.0.0`, `MaxKernel 25.99.99` |
+| 24 | BlueToolFixup | lets `bluetoothd` accept a non-Apple controller |
+| 25 | LegionBtFix | patches `bluetoothd` on Tahoe; `MinKernel 25.0.0`, `MaxKernel 25.99.99`, so Sequoia never loads it |
+| 26 | WTLWirelessBt (plugin inside WTLWireless.kext) | loads the MT7925 Bluetooth firmware so `bluetoothd` finds a working controller; it links nothing from the Wi-Fi core |
+| 27 | WTLWirelessNative (plugin inside WTLWireless.kext) | the macOS Wi-Fi menu front end; it links against the core, so it comes after entry 19; `MinKernel 25.0.0`, `MaxKernel 25.99.99`, and it steps aside on a macOS build it has no ABI record for |
+| 28 | IGPUConsoleRange | gives macOS a console memory range on the Intel GPU for the boots where the firmware hands the panel to it |
+| 29 | XeGfxBlock | disabled; a switch from the Intel graphics tests |
 
 The graphics driver is not here. NvGfx is installed from its own package into the system, not injected by OpenCore.
 
-The README's kext table lists WTLWireless 0.14.0 (one kext that replaced MtkWlan, MtkWlanNative and MtkBt on 2026-11-10) and LegionCpuPower 0.4.1, and the README's Wi-Fi row names the boot-args `mtkfe=native mtknativeif=1`. The published config has none of these yet: it is the kext list of 2026-10-17, and the README says it is due a refresh.
+The published config is the live one of 2026-11-11, so this table and the README's kext table describe the same 30 entries. The boot-args `mtkfe=native mtknativeif=1` select the Wi-Fi menu front end of WTLWireless.
 
 ## NVRAM, security and SMBIOS
 
@@ -114,7 +118,7 @@ The README's kext table lists WTLWireless 0.14.0 (one kext that replaced MtkWlan
 - `csr-active-config` is `0x0A43`: untrusted kexts, unrestricted file system, unrestricted NVRAM, unapproved kexts and unauthenticated root. NvGfx and VoodooHDA live in the system, not in OpenCore, and need the kext bits.
 - `NVRAM > Delete` lists every key that `Add` sets, so the config's values replace the stored ones at each boot. `WriteFlash false` means those values are set for the boot only and not written into the firmware's variable store.
 - `UEFI > Quirks > RequestBootVarRouting` keeps macOS's Startup Disk writes in OpenCore's own GUID, so macOS cannot rearrange the firmware boot order. `ReleaseUsbOwnership` takes the xHCI controllers from the firmware's legacy USB handling. `ResizeGpuBars -1` leaves the BAR sizes as the firmware set them.
-- `Misc > Security`: `SecureBootModel Disabled` (Secure Boot is off in the BIOS; OpenCore and the drivers are unsigned), `Vault Optional`, `ScanPolicy 0`, `DmgLoading Signed`, `BlacklistAppleUpdate true` (with `run-efi-updater No`, macOS updates never try to flash Apple firmware).
+- `Misc > Security`: `SecureBootModel Disabled` (Secure Boot is off in the BIOS; OpenCore and the drivers are unsigned), `Vault Optional`, `ScanPolicy 0x301` (file system lock on, APFS and HFS+ allowed, no device filter), `DmgLoading Signed`, `BlacklistAppleUpdate true` (with `run-efi-updater No`, macOS updates never try to flash Apple firmware).
 - `Misc > Debug`: `Target 67` writes the OpenCore log to `opencore-*.txt` on the EFI partition and shows warnings and errors on screen (`DisplayLevel` 0x80000002). The file is useful with a DEBUG build of OpenCore and harmless with a RELEASE one.
 - `PlatformInfo`: `MacBookPro16,1`, `UpdateSMBIOSMode Create`, `SpoofVendor true`. The four identity fields carry OpenCore's sample placeholders, written by `scripts/sanitize_config.py`; generate your own with GenSMBIOS before the first boot.
 

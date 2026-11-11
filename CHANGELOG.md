@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-11
+
+- `EFI/OC/config.plist` refreshed from the live config (it was the one of 2026-10-17). New in it: the three WTLWireless entries in place of MtkWlan and MtkBt, LegionCpuPower, IGPUConsoleRange, the graphical picker (OpenCanopy, `ShowPicker true`, `Timeout 2`, `UIScale 2`), `ScanPolicy 0x301`, two local `Misc > Tools` entries that are not published, and the boot-args `gfxrst=4 -nmintelfboff mtkfe=native mtknativeif=1`. `SSDT-DGPU-ON.aml` and XeGfxBlock are listed but disabled.
+- `MANIFEST.txt` regenerated from the EFI partition as it booted on 2026-11-11.
+- README and HOW-IT-WORKS follow: kext table in the new load order, picker, drivers and tools.
+
 ## 2026-11-10
 
 - README: Wi-Fi and Bluetooth now come from one kext, [WTLWireless](https://github.com/watchthelight-labs/WTLWireless) 0.14.0, with the Wi-Fi menu part and the Bluetooth loader as plugins inside it. It replaced MtkWlan 0.13.0, MtkWlanNative 0.4.17 and MtkBt 0.2.4 on this machine (three `Kernel > Add` entries, the core first). The published `config.plist` is unchanged and still has the older entries.

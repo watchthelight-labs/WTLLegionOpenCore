@@ -12,8 +12,8 @@ Most of the hardware needed its own driver, which is why this org exists. The co
 |---|---|---|
 | Boot | OpenCore 1.0.8 on its own EFI partition; Comet Lake CPUID spoof, `ProvideCurrentCpuInfo`, a classic MADT in place of the firmware's x2APIC-only one, 11 ACPI patches | boots Tahoe and Sequoia; [WTLLegionCbmrFix](https://github.com/watchthelight-labs/WTLLegionCbmrFix) unloads a firmware driver that otherwise panics macOS |
 | Graphics | [WTLNvidiaGfx](https://github.com/watchthelight-labs/WTLNvidiaGfx) (fork of NullMoth's NVIDIA driver) on the RTX 5070 | Metal 3, 2560x1600 at 165 Hz, 115 W (NvGfx 2.6.2-nvgfx.1 fixed the blocks in the Dock blur) |
-| Wi-Fi | [MtkWlan](https://github.com/watchthelight-labs/MtkWlan) 0.12.1 + [MtkWlanNative](https://github.com/watchthelight-labs/WTLWifiMenu) 0.4.15 | the Wi-Fi menu works: scans, joins, saves networks and auto-joins at boot (boot-args `mtkfe=native mtknativeif=1`) |
-| Bluetooth | [MtkBt](https://github.com/watchthelight-labs/MtkBt) + BlueToolFixup + [WTLLegionBtFix](https://github.com/watchthelight-labs/WTLLegionBtFix) | pairing, LE, AirPods (audio only with the workaround in LegionBtFix) |
+| Wi-Fi | [WTLWireless](https://github.com/watchthelight-labs/WTLWireless) 0.14.0: one kext, the core and its Wi-Fi menu plugin (before 2026-11-10: MtkWlan + MtkWlanNative) | the Wi-Fi menu works: scans, joins, saves networks and auto-joins at boot (boot-args `mtkfe=native mtknativeif=1`) |
+| Bluetooth | the Bluetooth plugin of [WTLWireless](https://github.com/watchthelight-labs/WTLWireless) (MtkBt before 0.14.0) + BlueToolFixup + [WTLLegionBtFix](https://github.com/watchthelight-labs/WTLLegionBtFix) | pairing, LE, AirPods (audio only with the workaround in LegionBtFix) |
 | Audio | Tahoe: [WTLAudio](https://github.com/watchthelight-labs/WTLAudio) in `/Library/Extensions` (Tahoe has no AppleHDA); Sequoia: AppleALC 1.9.8 with `alcid=18` (ALC257; injected on both, used on Sequoia) | speakers and volume; microphone detected, jack and HDMI untested |
 | Touchpad | VoodooI2C + VoodooI2CHID + [WTLI2CArrowLake](https://github.com/watchthelight-labs/WTLI2CArrowLake) | works, polled (`-vi2c-force-polling`) |
 | Keyboard | the ITE 8258 USB controller with [WTLLegionITEKbdFix](https://github.com/watchthelight-labs/WTLLegionITEKbdFix); VoodooPS2 for the PS/2 device the DSDT declares | types; no backlight control; the arrow keys and F-key dome on my unit are hardware faults |
@@ -61,17 +61,17 @@ Binaries are not in this repository. Get each from its release page; the version
 | VoodooPS2Controller (+ Keyboard, VoodooInput) | 2.3.7 | acidanthera |
 | VoodooI2C (+ VoodooGPIO, VoodooI2CServices), VoodooI2CHID | 2.9.1 | VoodooI2C |
 | LegionI2CArrowLake | 1.1.0 | this org |
-| MtkWlan | 0.12.1 | this org |
-| MtkWlanNative | 0.4.15 | this org, Tahoe only (Darwin 25), checked on 26.7.1 and 26.7.2 |
+| WTLWireless | 0.14.0 | this org; replaced MtkWlan, MtkWlanNative and MtkBt on 2026-11-10 |
+| WTLWireless.kext/Contents/PlugIns/WTLWirelessNative | 0.14.0 | this org, the Wi-Fi menu part, Tahoe only (Darwin 25); 0.14.0 was booted on the 26.7.3 developer beta (25G416) |
 | LegionCpuPower | 0.4.1 | this org, Tahoe only (Darwin 25) |
 | AMFIPass | 1.4.1 | dortania (lets WindowServer load the ad hoc signed Metal plugin) |
 | AppleALC | 1.9.8 | acidanthera (audio on Sequoia, `alcid=18`) |
 | LegionCpuProbe | 1.1.0 | this org, read-only MSR probe for the turbo question; optional |
 | BlueToolFixup | 2.7.2 | acidanthera (BrcmPatchRAM release) |
 | LegionBtFix | 0.3.0 | this org, any Tahoe build with the same bluetoothd code, `MinKernel 25.0.0`, `MaxKernel 25.99.99` |
-| MtkBt | 0.2.4 | this org |
+| WTLWireless.kext/Contents/PlugIns/WTLWirelessBt | 0.14.0 | this org, the Bluetooth firmware loader, its own `Kernel > Add` entry |
 
-Graphics is NvGfx's installer package, not injected by OpenCore. The published `config.plist` still lists the kexts of 2026-10-17 and does not yet load MtkWlanNative or LegionCpuPower or carry `mtkfe=native mtknativeif=1`; it is due a refresh from the live config.
+Graphics is NvGfx's installer package, not injected by OpenCore. The published `config.plist` still lists the kexts of 2026-10-17: MtkWlan and MtkBt as separate kexts, no Wi-Fi menu plugin, no LegionCpuPower and no `mtkfe=native mtknativeif=1`. It is due a refresh from the live config. Until then the three WTLWireless entries are in that repo's [`tools/bundle/config-snippet.plist`](https://github.com/watchthelight-labs/WTLWireless/blob/main/tools/bundle/config-snippet.plist).
 
 ### Drivers and tools
 

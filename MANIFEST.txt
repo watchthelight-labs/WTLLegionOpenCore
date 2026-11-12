@@ -1,4 +1,4 @@
-# sha256 of every file on the EFI partition this config boots from (2026-11-11), except the config.plist files (identity), backups (*.bak), the Wi-Fi guard's fallback copy (EFI/OC/wifi-lastgood) and the OpenCore logs.
+# sha256 of every file on the EFI partition this config boots from (2026-11-12), except the config.plist files (identity), backups (*.bak), the Wi-Fi guard's fallback copy (EFI/OC/wifi-lastgood) and the OpenCore logs.
 7b26e33bfd84fbc5025fcb16994f7eda3224d15edcfc004d71c8761e08a766fd  EFI/BOOT/BOOTx64.efi
 ba37872533b7d11a5f57354d329c0074a1d8dc3c95c41a6566c6636c7f25cb65  EFI/OC/ACPI/APIC-legacy.aml
 792b7c5f5231b9889d92445b8e7379f592b84e245d54c562f035a2ee873fcd77  EFI/OC/ACPI/SSDT-DGPU-ON.aml
@@ -111,12 +111,12 @@ b23cc5f42b81fa78ec32c773a3830865b93f2b3305a144504174060044986d08  EFI/OC/Kexts/V
 e4e4236eaa09878852c34eed4d4a42cc25395f40e6b9877917dc8599ab92109b  EFI/OC/Kexts/VoodooPS2Controller.kext/Contents/PlugIns/VoodooPS2Trackpad.kext/Contents/MacOS/VoodooPS2Trackpad
 6e973a3dc47f4b707828cb8f790f3a4cc4e32d9b01accfcb6c2433f8e6cffb45  EFI/OC/Kexts/WhateverGreen.kext/Contents/Info.plist
 17944705056d6d929661da2b60dd859e753228aad3ea96a3e8d0d803bc30bd45  EFI/OC/Kexts/WhateverGreen.kext/Contents/MacOS/WhateverGreen
-de6c846dce4dd93c57b18365a94381492a2a0a505ed7022f29581c471b584108  EFI/OC/Kexts/WTLWireless.kext/Contents/Info.plist
-129744934a921eb64ba5fe58a8e16bfd581e85fbaa69e8baf2639a0046e91a4e  EFI/OC/Kexts/WTLWireless.kext/Contents/MacOS/WTLWireless
-227d2f56ce7f340d1208d3ccd058e8383fd69758e6d992ecf8dbcc2ad1670e13  EFI/OC/Kexts/WTLWireless.kext/Contents/PlugIns/WTLWirelessBt.kext/Contents/Info.plist
-e755a8c20aed5955aaef568747a29e40d924baea78c1f06a708cc1c057cbac67  EFI/OC/Kexts/WTLWireless.kext/Contents/PlugIns/WTLWirelessBt.kext/Contents/MacOS/WTLWirelessBt
-98fe2324a570856b49f33bb1543126eca2ca28a6fe34e921a11d6c42001d918d  EFI/OC/Kexts/WTLWireless.kext/Contents/PlugIns/WTLWirelessNative.kext/Contents/Info.plist
-fc91675d01ee12359caa5da196195911bf2e61aa08117f16dc4e75e0cce1fb5f  EFI/OC/Kexts/WTLWireless.kext/Contents/PlugIns/WTLWirelessNative.kext/Contents/MacOS/WTLWirelessNative
+b14b1c04140297c1cc96467b73d39a7f6721913c1c690dc81d9a37e517ba8e13  EFI/OC/Kexts/WTLWireless.kext/Contents/Info.plist
+8c8eb1e46fa06283833df9c43a6026dde88845979b064108a9567187a0a2407f  EFI/OC/Kexts/WTLWireless.kext/Contents/MacOS/WTLWireless
+5a2823d86d48c9b07308701a086a43711331edf19d146adec3b6738218b42531  EFI/OC/Kexts/WTLWireless.kext/Contents/PlugIns/WTLWirelessBt.kext/Contents/Info.plist
+839bf76821dc6870cfa6abf3213680eb578cd223ae06e38c8e375ed60ddfdd86  EFI/OC/Kexts/WTLWireless.kext/Contents/PlugIns/WTLWirelessBt.kext/Contents/MacOS/WTLWirelessBt
+ce8367ffa0bca53cd3b624b92f9da2a2402ff2266aecc099b31523592bffea4f  EFI/OC/Kexts/WTLWireless.kext/Contents/PlugIns/WTLWirelessNative.kext/Contents/Info.plist
+1a8b2c0f3408b9f8806447efcb6d68bcac85be87585622401536cb59c1e45580  EFI/OC/Kexts/WTLWireless.kext/Contents/PlugIns/WTLWirelessNative.kext/Contents/MacOS/WTLWirelessNative
 9f92d99db8c811e578413872b31b59e1fffeb7c3f842ab91381376fb7ee99dc3  EFI/OC/Kexts/XeGfxBlock.kext/Contents/Info.plist
 11ba0b763d765fb82187214d1fa2ee5a9330f851461c12e34d532b7b91097875  EFI/OC/OpenCore.efi
 5c25792248d6d2d6e538ab795d05cdc96cb871ca28fe38fa040ff98fec624e95  EFI/OC/Resources/Font/Font_1x.bin

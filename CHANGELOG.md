@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-12
+
+- WTLWireless 0.15.0 in place of 0.14.0 (booted 2026-11-11 on the 26.7.3 developer beta, 25G416). On this laptop's MT7925 nothing changes; the release adds a switched-off MT7927 row. Same three `Kernel > Add` entries, `config.plist` untouched. `MANIFEST.txt` has the new hashes of the kext's six files.
+
 ## 2026-11-11
 
 - `EFI/OC/config.plist` refreshed from the live config (it was the one of 2026-10-17). New in it: the three WTLWireless entries in place of MtkWlan and MtkBt, LegionCpuPower, IGPUConsoleRange, the graphical picker (OpenCanopy, `ShowPicker true`, `Timeout 2`, `UIScale 2`), `ScanPolicy 0x301`, two local `Misc > Tools` entries that are not published, and the boot-args `gfxrst=4 -nmintelfboff mtkfe=native mtknativeif=1`. `SSDT-DGPU-ON.aml` and XeGfxBlock are listed but disabled.

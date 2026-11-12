@@ -12,7 +12,7 @@ Most of the hardware needed its own driver, which is why this org exists. The co
 |---|---|---|
 | Boot | OpenCore 1.0.8 on its own EFI partition; Comet Lake CPUID spoof, `ProvideCurrentCpuInfo`, a classic MADT in place of the firmware's x2APIC-only one, 11 ACPI patches | boots Tahoe and Sequoia; [WTLLegionCbmrFix](https://github.com/watchthelight-labs/WTLLegionCbmrFix) unloads a firmware driver that otherwise panics macOS |
 | Graphics | [WTLNvidiaGfx](https://github.com/watchthelight-labs/WTLNvidiaGfx) (fork of NullMoth's NVIDIA driver) on the RTX 5070 | Metal 3, 2560x1600 at 165 Hz, 115 W (NvGfx 2.6.2-nvgfx.1 fixed the blocks in the Dock blur) |
-| Wi-Fi | [WTLWireless](https://github.com/watchthelight-labs/WTLWireless) 0.14.0: one kext, the core and its Wi-Fi menu plugin (before 2026-11-10: MtkWlan + MtkWlanNative) | the Wi-Fi menu works: scans, joins, saves networks and auto-joins at boot (boot-args `mtkfe=native mtknativeif=1`) |
+| Wi-Fi | [WTLWireless](https://github.com/watchthelight-labs/WTLWireless) 0.15.0: one kext, the core and its Wi-Fi menu plugin (before 2026-11-10: MtkWlan + MtkWlanNative) | the Wi-Fi menu works: scans, joins, saves networks and auto-joins at boot (boot-args `mtkfe=native mtknativeif=1`) |
 | Bluetooth | the Bluetooth plugin of [WTLWireless](https://github.com/watchthelight-labs/WTLWireless) (MtkBt before 0.14.0) + BlueToolFixup + [WTLLegionBtFix](https://github.com/watchthelight-labs/WTLLegionBtFix) | pairing, LE, AirPods (audio only with the workaround in LegionBtFix) |
 | Audio | Tahoe: [WTLAudio](https://github.com/watchthelight-labs/WTLAudio) in `/Library/Extensions` (Tahoe has no AppleHDA); Sequoia: AppleALC 1.9.8 with `alcid=18` (ALC257; injected on both, used on Sequoia) | speakers and volume; microphone detected, jack and HDMI untested |
 | Touchpad | VoodooI2C + VoodooI2CHID + [WTLI2CArrowLake](https://github.com/watchthelight-labs/WTLI2CArrowLake) | works, polled (`-vi2c-force-polling`) |
@@ -62,15 +62,15 @@ Binaries are not in this repository. Get each from its release page; the version
 | VoodooPS2Controller (+ Keyboard, VoodooInput) | 2.3.7 | acidanthera |
 | VoodooI2C (+ VoodooGPIO, VoodooI2CServices), VoodooI2CHID | 2.9.1 | VoodooI2C |
 | LegionI2CArrowLake | 1.1.0 | this org |
-| WTLWireless | 0.14.0 | this org; replaced MtkWlan, MtkWlanNative and MtkBt on 2026-11-10 |
+| WTLWireless | 0.15.0 | this org; replaced MtkWlan, MtkWlanNative and MtkBt on 2026-11-10 |
 | AMFIPass | 1.4.1 | dortania (lets WindowServer load the ad hoc signed Metal plugin) |
 | AppleALC | 1.9.8 | acidanthera (audio on Sequoia, `alcid=18`) |
 | LegionCpuProbe | 1.1.0 | this org, read-only MSR probe for the turbo question; optional |
 | LegionCpuPower | 0.4.1 | this org, Tahoe only (`MinKernel 25.0.0`, `MaxKernel 25.99.99`) |
 | BlueToolFixup | 2.7.2 | acidanthera (BrcmPatchRAM release) |
 | LegionBtFix | 0.3.0 | this org, any Tahoe build with the same bluetoothd code, `MinKernel 25.0.0`, `MaxKernel 25.99.99` |
-| WTLWireless.kext/Contents/PlugIns/WTLWirelessBt | 0.14.0 | this org, the Bluetooth firmware loader, its own `Kernel > Add` entry |
-| WTLWireless.kext/Contents/PlugIns/WTLWirelessNative | 0.14.0 | this org, the Wi-Fi menu part, Tahoe only (`MinKernel 25.0.0`, `MaxKernel 25.99.99`); 0.14.0 was booted on the 26.7.3 developer beta (25G416) |
+| WTLWireless.kext/Contents/PlugIns/WTLWirelessBt | 0.15.0 | this org, the Bluetooth firmware loader, its own `Kernel > Add` entry |
+| WTLWireless.kext/Contents/PlugIns/WTLWirelessNative | 0.15.0 | this org, the Wi-Fi menu part, Tahoe only (`MinKernel 25.0.0`, `MaxKernel 25.99.99`); 0.15.0 was booted on the 26.7.3 developer beta (25G416) |
 | IGPUConsoleRange | 0.4 | this org ([WTLHybridGfx](https://github.com/watchthelight-labs/WTLHybridGfx)): gives macOS a console memory range on the Intel GPU when the firmware hands the panel to it |
 | XeGfxBlock | 1.1 | listed but disabled; a switch from the Intel graphics tests ([WTLIntelGfx](https://github.com/watchthelight-labs/WTLIntelGfx)), leave it out |
 
